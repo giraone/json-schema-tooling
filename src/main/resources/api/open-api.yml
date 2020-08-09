@@ -1,0 +1,292 @@
+openapi: 3.0.2
+info:
+  title: Person API
+  version: 1.0.0
+  description: |-
+    Simple Person API.
+  termsOfService: 'http://giraone.com/terms/'
+  contact:
+    name: GiraOne
+    url: 'http://giraone.com'
+    email: info@giraone.com
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:8080/api/v1'
+tags:
+  -
+    name: Person
+    description: ''
+paths:
+  /persons:
+    get:
+      parameters:
+        - name: limit
+          description: Optional limit for the number of returned persons.
+          schema:
+            format: int32
+            type: integer
+          in: query
+          required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonFull'
+              examples:
+                list_example1:
+                  value:
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ece
+                      first_name: John
+                      last_name: Doe
+                      date_of_birth: 1977-12-31
+                      gender: M
+                      age: 44
+                      deceased: false
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                      first_name: Jane
+                      last_name: Watson
+                      date_of_birth: 1976-01-01
+                      gender: F
+                      age: 44
+                      deceased: false
+          description: A list of persons.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      operationId: getAll
+      description: |
+        Return all persons.
+    post:
+      requestBody:
+        description: Insert a new person to the repository.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonBase'
+            examples:
+              insert_request_example1:
+                value:
+                  first_name: Jane
+                  last_name: Watson
+                  date_of_birth: 1976-01-01
+                  gender: F
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonFull'
+              examples:
+                insert_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: 1976-01-01
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The added person extended by some calculated values.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      operationId: insertNew
+      description: Insert a new person to the repository. If no id is given it will be generated.
+  '/persons/{id}':
+    get:
+      parameters:
+        - examples:
+            example_1:
+              value: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+          name: id
+          description: The UUID of the person to fetch.
+          schema:
+            format: string
+          in: path
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '../schema/components/schemas/PersonFull'
+              examples:
+                example_1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: 1976-01-01
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: a person, if one was found for the given id.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      operationId: getOneById
+      description: |-
+        Returns a person based on a given ID.
+    delete:
+      parameters:
+        - name: id
+          description: The UUID of the person to delete.
+          schema:
+            type: string
+          in: path
+          required: true
+      responses:
+        '204':
+          description: Person was deleted.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+      operationId: deleteById
+      description: Delete a single person based on the ID supplied.
+    parameters:
+      - name: id
+        description: ID of person.
+        schema:
+          type: string
+        in: path
+        required: true
+components:
+  schemas:
+    PersonBase:
+      required:
+        - first_name
+        - last_name
+        - date_of_birth
+        - gender
+      properties:
+        id:
+          type: string
+          description: The person's UUID.
+        first_name:
+          type: string
+          description: The person's first name.
+          pattern: "^([0-9a-zA-Z]{1,100})$"
+        last_name:
+          type: string
+          description: The person's last name.
+          pattern: "^([0-9a-zA-Z]{1,100})$"
+        date_of_birth:
+          description: Person's data of birth.
+          type: string
+          format: date-time
+          customDateTimePattern: yyyy-MM-dd
+        gender:
+          description: The person's gender.
+          type: string
+          enum:
+            - U
+            - M
+            - F
+            - D
+          default: U
+        deceased:
+          description: Flag, if person is deceased.
+          type: boolean
+          default: 'false'
+        comment:
+          type: string
+          description: A comment.
+          maxLength: 1000
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+    PersonFull:
+      required:
+        - id
+        - firstName
+        - lastName
+        - dateOfBirth
+        - age
+        - gender
+        - deceased
+        - creationDateTime
+        - comment
+      properties:
+        id:
+          type: string
+          description: The person's UUID.
+        first_name:
+          type: string
+          description: The person's first name.
+          pattern: "^([0-9a-zA-Z]{1,100})$"
+        last_name:
+          type: string
+          description: The person's last name.
+          pattern: "^([0-9a-zA-Z]{1,100})$"
+        date_of_birth:
+          description: Person's data of birth.
+          type: string
+          format: date-time
+          customDateTimePattern: yyyy-MM-dd
+        gender:
+          description: The person's gender.
+          type: string
+          enum:
+            - U
+            - M
+            - F
+            - D
+          default: U
+        deceased:
+          description: Flag, if person is deceased.
+          type: boolean
+          default: 'false'
+        comment:
+          type: string
+          description: A comment.
+          maxLength: 1000
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+        age:
+          description: Age in years which must be equal to or greater than zero.
+          type: integer
+          minimum: 0
+        creation_date_time:
+          description: Timestamp, when the entry was added.
+          type: string
+          format: date-time
+    GeoLocation:
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string

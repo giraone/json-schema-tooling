@@ -1,2 +1,4 @@
-# json-schema-tooling
-Spring Boot based REST API to show JSON schema and OpenAPI tooling
+# Working with JSON Schema and OpenAPI 3.X
+
+- `snake_case` JSON notation on the wire
+

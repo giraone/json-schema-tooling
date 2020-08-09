@@ -1,0 +1,28 @@
+---
+"$id": https://giraone.com/person.schema.json
+"$schema": http://json-schema.org/draft-07/schema#
+title: Definition of a Person object, that is returned by the Person API.
+type: object
+extends:
+  "$ref": person-base.json
+required:
+  - id
+  - firstName
+  - lastName
+  - dateOfBirth
+  - age
+  - gender
+  - deceased
+  - creationDateTime
+  - comment
+properties:
+  age:
+    description: Age in years which must be equal to or greater than zero.
+    type: integer
+    minimum: 0
+    javaType: long
+  creation_date_time:
+    javaName: creationDateTime
+    description: Timestamp, when the entry was added.
+    type: string
+    format: date-time

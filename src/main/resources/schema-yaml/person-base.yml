@@ -1,0 +1,55 @@
+---
+"$id": https://giraone.com/person.schema.json
+"$schema": http://json-schema.org/draft-07/schema#
+title: Base definition of a Person.
+type: object
+required:
+  - first_name
+  - last_name
+  - date_of_birth
+  - gender
+properties:
+  id:
+    type: string
+    format: uuid
+    description: The person's ID.
+  first_name:
+    javaName: firstName
+    type: string
+    description: The person's first name.
+    pattern: "^([0-9a-zA-Z]{1,100})$"
+  last_name:
+    javaName: lastName
+    type: string
+    description: The person's last name.
+    pattern: "^([0-9a-zA-Z]{1,100})$"
+  date_of_birth:
+    javaName: dateOfBirth
+    description: Person's data of birth.
+    type: string
+    format: date-time
+    customDateTimePattern: yyyy-MM-dd
+  gender:
+    description: The person's gender.
+    type: string
+    enum:
+      - U
+      - M
+      - F
+      - D
+    javaEnumNames:
+      - unknown
+      - male
+      - female
+      - divers
+    default: U
+  deceased:
+    description: Flag, if person is deceased.
+    type: boolean
+    default: 'false'
+  comment:
+    type: string
+    description: A comment.
+    maxLength: 1000
+  location:
+    "$ref": geo-location.json
