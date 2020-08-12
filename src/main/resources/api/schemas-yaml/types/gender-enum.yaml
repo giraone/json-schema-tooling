@@ -1,0 +1,19 @@
+---
+type: string
+description: >
+  Gender of a person.
+  * `U`: undefined or unknown
+  * `M`: male
+  * `F`: female
+  * `D`: divers
+enum:
+  - U
+  - M
+  - F
+  - D
+default: U
+x-enum-varnames:
+  - UNDEFINED
+  - MALE
+  - FEMALE
+  - DIVERS

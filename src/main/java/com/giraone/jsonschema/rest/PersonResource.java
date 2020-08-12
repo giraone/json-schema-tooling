@@ -3,17 +3,22 @@ package com.giraone.jsonschema.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.giraone.jsonschema.generated.PersonBase;
-import com.giraone.jsonschema.generated.PersonFull;
+import com.giraone.jsonschema.api.ApiApi;
+import com.giraone.jsonschema.models.PatchEntry;
+import com.giraone.jsonschema.models.PersonBase;
+import com.giraone.jsonschema.models.PersonFull;
+import com.giraone.jsonschema.models.Problem;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,7 +29,7 @@ import static java.time.temporal.ChronoUnit.YEARS;
 
 @RestController
 @RequestMapping("/api/v1")
-public class PersonResource {
+public class PersonResource implements ApiApi {
 
     private final Logger log = LoggerFactory.getLogger(PersonResource.class);
 
@@ -85,6 +90,23 @@ public class PersonResource {
         return ResponseEntity.ok(existingPerson);
     }
 
+    @Override
+    public ResponseEntity<PersonFull> updateSelective(UUID id, @Valid List<PatchEntry> patchEntry) {
+
+        JsonPatch jsonPatch = null;
+        try {
+            jsonPatch = JsonPatch.fromJson(objectMapper.readTree(objectMapper.writeValueAsString(patchEntry)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new Problem()
+                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .withDetail("PatchEntry conversion failed.")
+            );
+        }
+        return updateSelective(id, jsonPatch);
+    }
+
     @PatchMapping(path = "/persons/{id}", consumes = "application/json-patch+json")
     public ResponseEntity<PersonFull> updateSelective(@PathVariable UUID id, @Valid @RequestBody JsonPatch patch) {
 
@@ -93,7 +115,7 @@ public class PersonResource {
         if (existingPerson == null) {
             return ResponseEntity.notFound().build();
         }
-        JsonNode patched = null;
+        JsonNode patched;
         try {
             patched = patch.apply(objectMapper.convertValue(existingPerson, JsonNode.class));
             PersonFull updatedPerson = objectMapper.treeToValue(patched, PersonFull.class);
@@ -112,14 +134,14 @@ public class PersonResource {
      * @return A list of persons.
      */
     @GetMapping("/persons")
-    public ResponseEntity<Collection<PersonFull>> getAll(@RequestParam(required = false) Integer limit) {
+    public ResponseEntity<List<PersonFull>> getAll(@RequestParam(required = false) Integer limit) {
 
         log.debug("GET");
         Collection<PersonFull> persons = repository.values();
-        if (limit != null) {
-            persons = persons.stream().limit(limit.intValue()).collect(Collectors.toList());
-        }
-        return ResponseEntity.ok(persons);
+        List<PersonFull> ret = persons.stream()
+            .limit(limit != null ? limit : 10000)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(ret);
     }
 
     /**

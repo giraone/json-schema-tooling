@@ -1,0 +1,1044 @@
+openapi: 3.0.3
+info:
+  title: Person API
+  version: 1.0.0
+  description: Simple Person API.
+  termsOfService: 'http://giraone.com/terms/'
+  contact:
+    name: GiraOne
+    url: 'http://giraone.com'
+    email: info@giraone.com
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: Person
+    description: All endpoints related to Person object.
+paths:
+  /api/v1/persons:
+    get:
+      operationId: getAll
+      summary: Return all persons of the repository.
+      tags:
+        - Person
+      parameters:
+        - name: limit
+          description: Optional limit for the number of returned persons.
+          schema:
+            format: int32
+            type: integer
+          in: query
+          required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  title: 'Definition of a Person object, that is returned by the Person API.'
+                  allOf:
+                    - title: Base definition of a Person.
+                      type: object
+                      required:
+                        - first_name
+                        - last_name
+                        - date_of_birth
+                        - gender
+                      properties:
+                        id:
+                          type: string
+                          description: The person's ID.
+                        first_name:
+                          type: string
+                          description: The person's first name.
+                          pattern: '^[0-9a-zA-Z]{1,100}$'
+                        last_name:
+                          type: string
+                          description: The person's last name.
+                          pattern: '^[0-9a-zA-Z]{1,100}$'
+                        date_of_birth:
+                          description: Person's data of birth.
+                          type: string
+                          format: date
+                        gender:
+                          type: string
+                          description: |
+                            Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                          enum:
+                            - U
+                            - M
+                            - F
+                            - D
+                          default: U
+                          x-enum-varnames:
+                            - UNDEFINED
+                            - MALE
+                            - FEMALE
+                            - DIVERS
+                        deceased:
+                          description: 'Flag, if person is deceased.'
+                          type: boolean
+                          default: 'false'
+                        comment:
+                          type: string
+                          description: A comment.
+                          maxLength: 1000
+                        location:
+                          title: GeoLocation
+                          description: Geographical coordinates.
+                          type: object
+                          required:
+                            - latitude
+                            - longitude
+                          properties:
+                            latitude:
+                              type: number
+                              minimum: -90
+                              maximum: 90
+                            longitude:
+                              type: number
+                              minimum: -180
+                              maximum: 180
+                    - type: object
+                      required:
+                        - id
+                        - firstName
+                        - lastName
+                        - dateOfBirth
+                        - age
+                        - gender
+                        - deceased
+                        - creationDateTime
+                        - comment
+                      properties:
+                        age:
+                          description: Age in years which must be equal to or greater than zero.
+                          type: integer
+                          minimum: 0
+                        creation_date_time:
+                          description: 'Timestamp, when the entry was added.'
+                          type: string
+                          format: date-time
+              examples:
+                list_example1:
+                  value:
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ece
+                      first_name: John
+                      last_name: Doe
+                      date_of_birth: '1977-12-31T00:00:00.000Z'
+                      gender: M
+                      age: 44
+                      deceased: false
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                      first_name: Jane
+                      last_name: Watson
+                      date_of_birth: '1976-01-01T00:00:00.000Z'
+                      gender: F
+                      age: 44
+                      deceased: false
+          description: A list of persons.
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error
+    post:
+      operationId: insertNew
+      summary: Insert a new person to the repository. If no id is given it will be generated.
+      tags:
+        - Person
+      requestBody:
+        description: Insert a new person to the repository.
+        content:
+          application/json:
+            schema:
+              title: Base definition of a Person.
+              type: object
+              required:
+                - first_name
+                - last_name
+                - date_of_birth
+                - gender
+              properties:
+                id:
+                  type: string
+                  description: The person's ID.
+                first_name:
+                  type: string
+                  description: The person's first name.
+                  pattern: '^[0-9a-zA-Z]{1,100}$'
+                last_name:
+                  type: string
+                  description: The person's last name.
+                  pattern: '^[0-9a-zA-Z]{1,100}$'
+                date_of_birth:
+                  description: Person's data of birth.
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  description: |
+                    Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                  enum:
+                    - U
+                    - M
+                    - F
+                    - D
+                  default: U
+                  x-enum-varnames:
+                    - UNDEFINED
+                    - MALE
+                    - FEMALE
+                    - DIVERS
+                deceased:
+                  description: 'Flag, if person is deceased.'
+                  type: boolean
+                  default: 'false'
+                comment:
+                  type: string
+                  description: A comment.
+                  maxLength: 1000
+                location:
+                  title: GeoLocation
+                  description: Geographical coordinates.
+                  type: object
+                  required:
+                    - latitude
+                    - longitude
+                  properties:
+                    latitude:
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                    longitude:
+                      type: number
+                      minimum: -180
+                      maximum: 180
+            examples:
+              insert_request_example1:
+                value:
+                  first_name: Jane
+                  last_name: Watson
+                  date_of_birth: '1976-01-01T00:00:00.000Z'
+                  gender: F
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: 'Definition of a Person object, that is returned by the Person API.'
+                allOf:
+                  - title: Base definition of a Person.
+                    type: object
+                    required:
+                      - first_name
+                      - last_name
+                      - date_of_birth
+                      - gender
+                    properties:
+                      id:
+                        type: string
+                        description: The person's ID.
+                      first_name:
+                        type: string
+                        description: The person's first name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      last_name:
+                        type: string
+                        description: The person's last name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      date_of_birth:
+                        description: Person's data of birth.
+                        type: string
+                        format: date
+                      gender:
+                        type: string
+                        description: |
+                          Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                        enum:
+                          - U
+                          - M
+                          - F
+                          - D
+                        default: U
+                        x-enum-varnames:
+                          - UNDEFINED
+                          - MALE
+                          - FEMALE
+                          - DIVERS
+                      deceased:
+                        description: 'Flag, if person is deceased.'
+                        type: boolean
+                        default: 'false'
+                      comment:
+                        type: string
+                        description: A comment.
+                        maxLength: 1000
+                      location:
+                        title: GeoLocation
+                        description: Geographical coordinates.
+                        type: object
+                        required:
+                          - latitude
+                          - longitude
+                        properties:
+                          latitude:
+                            type: number
+                            minimum: -90
+                            maximum: 90
+                          longitude:
+                            type: number
+                            minimum: -180
+                            maximum: 180
+                  - type: object
+                    required:
+                      - id
+                      - firstName
+                      - lastName
+                      - dateOfBirth
+                      - age
+                      - gender
+                      - deceased
+                      - creationDateTime
+                      - comment
+                    properties:
+                      age:
+                        description: Age in years which must be equal to or greater than zero.
+                        type: integer
+                        minimum: 0
+                      creation_date_time:
+                        description: 'Timestamp, when the entry was added.'
+                        type: string
+                        format: date-time
+              examples:
+                insert_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The added person extended by some calculated values.
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error
+  '/api/v1/persons/{id}':
+    parameters:
+      - name: id
+        description: The UUID of the person to fetch.
+        schema:
+          type: string
+          format: uuid
+        in: path
+        required: true
+    get:
+      operationId: getOneById
+      summary: Returns a person from the repository based on a given ID.
+      tags:
+        - Person
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: 'Definition of a Person object, that is returned by the Person API.'
+                allOf:
+                  - title: Base definition of a Person.
+                    type: object
+                    required:
+                      - first_name
+                      - last_name
+                      - date_of_birth
+                      - gender
+                    properties:
+                      id:
+                        type: string
+                        description: The person's ID.
+                      first_name:
+                        type: string
+                        description: The person's first name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      last_name:
+                        type: string
+                        description: The person's last name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      date_of_birth:
+                        description: Person's data of birth.
+                        type: string
+                        format: date
+                      gender:
+                        type: string
+                        description: |
+                          Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                        enum:
+                          - U
+                          - M
+                          - F
+                          - D
+                        default: U
+                        x-enum-varnames:
+                          - UNDEFINED
+                          - MALE
+                          - FEMALE
+                          - DIVERS
+                      deceased:
+                        description: 'Flag, if person is deceased.'
+                        type: boolean
+                        default: 'false'
+                      comment:
+                        type: string
+                        description: A comment.
+                        maxLength: 1000
+                      location:
+                        title: GeoLocation
+                        description: Geographical coordinates.
+                        type: object
+                        required:
+                          - latitude
+                          - longitude
+                        properties:
+                          latitude:
+                            type: number
+                            minimum: -90
+                            maximum: 90
+                          longitude:
+                            type: number
+                            minimum: -180
+                            maximum: 180
+                  - type: object
+                    required:
+                      - id
+                      - firstName
+                      - lastName
+                      - dateOfBirth
+                      - age
+                      - gender
+                      - deceased
+                      - creationDateTime
+                      - comment
+                    properties:
+                      age:
+                        description: Age in years which must be equal to or greater than zero.
+                        type: integer
+                        minimum: 0
+                      creation_date_time:
+                        description: 'Timestamp, when the entry was added.'
+                        type: string
+                        format: date-time
+              examples:
+                example_1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: 'a person, if one was found for the given id.'
+        '404':
+          description: person with given id not found
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error
+    put:
+      operationId: updateExisting
+      summary: Update an existing person in the repository by fully overwriting the data.
+      tags:
+        - Person
+      requestBody:
+        description: The person data used for the update.
+        content:
+          application/json:
+            schema:
+              title: Base definition of a Person.
+              type: object
+              required:
+                - first_name
+                - last_name
+                - date_of_birth
+                - gender
+              properties:
+                id:
+                  type: string
+                  description: The person's ID.
+                first_name:
+                  type: string
+                  description: The person's first name.
+                  pattern: '^[0-9a-zA-Z]{1,100}$'
+                last_name:
+                  type: string
+                  description: The person's last name.
+                  pattern: '^[0-9a-zA-Z]{1,100}$'
+                date_of_birth:
+                  description: Person's data of birth.
+                  type: string
+                  format: date
+                gender:
+                  type: string
+                  description: |
+                    Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                  enum:
+                    - U
+                    - M
+                    - F
+                    - D
+                  default: U
+                  x-enum-varnames:
+                    - UNDEFINED
+                    - MALE
+                    - FEMALE
+                    - DIVERS
+                deceased:
+                  description: 'Flag, if person is deceased.'
+                  type: boolean
+                  default: 'false'
+                comment:
+                  type: string
+                  description: A comment.
+                  maxLength: 1000
+                location:
+                  title: GeoLocation
+                  description: Geographical coordinates.
+                  type: object
+                  required:
+                    - latitude
+                    - longitude
+                  properties:
+                    latitude:
+                      type: number
+                      minimum: -90
+                      maximum: 90
+                    longitude:
+                      type: number
+                      minimum: -180
+                      maximum: 180
+            examples:
+              update_request_example1:
+                value:
+                  first_name: Jill
+                  last_name: Watson
+                  date_of_birth: '1976-01-01T00:00:00.000Z'
+                  gender: F
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: 'Definition of a Person object, that is returned by the Person API.'
+                allOf:
+                  - title: Base definition of a Person.
+                    type: object
+                    required:
+                      - first_name
+                      - last_name
+                      - date_of_birth
+                      - gender
+                    properties:
+                      id:
+                        type: string
+                        description: The person's ID.
+                      first_name:
+                        type: string
+                        description: The person's first name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      last_name:
+                        type: string
+                        description: The person's last name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      date_of_birth:
+                        description: Person's data of birth.
+                        type: string
+                        format: date
+                      gender:
+                        type: string
+                        description: |
+                          Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                        enum:
+                          - U
+                          - M
+                          - F
+                          - D
+                        default: U
+                        x-enum-varnames:
+                          - UNDEFINED
+                          - MALE
+                          - FEMALE
+                          - DIVERS
+                      deceased:
+                        description: 'Flag, if person is deceased.'
+                        type: boolean
+                        default: 'false'
+                      comment:
+                        type: string
+                        description: A comment.
+                        maxLength: 1000
+                      location:
+                        title: GeoLocation
+                        description: Geographical coordinates.
+                        type: object
+                        required:
+                          - latitude
+                          - longitude
+                        properties:
+                          latitude:
+                            type: number
+                            minimum: -90
+                            maximum: 90
+                          longitude:
+                            type: number
+                            minimum: -180
+                            maximum: 180
+                  - type: object
+                    required:
+                      - id
+                      - firstName
+                      - lastName
+                      - dateOfBirth
+                      - age
+                      - gender
+                      - deceased
+                      - creationDateTime
+                      - comment
+                    properties:
+                      age:
+                        description: Age in years which must be equal to or greater than zero.
+                        type: integer
+                        minimum: 0
+                      creation_date_time:
+                        description: 'Timestamp, when the entry was added.'
+                        type: string
+                        format: date-time
+              examples:
+                update_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jill
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The updated person extended by some calculated values.
+        '404':
+          description: person with given id not found
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error
+    patch:
+      operationId: updateSelective
+      summary: Update an existing person in the repository using selective patch operations.
+      tags:
+        - Person
+      requestBody:
+        description: Update an existing person in the repository.
+        content:
+          application/json:
+            schema:
+              type: array
+              description: A JSONPatch array as defined by RFC 6902.
+              items:
+                type: object
+                description: A JSONPatch document as defined by RFC 6902.
+                required:
+                  - op
+                  - path
+                properties:
+                  op:
+                    type: string
+                    description: The operation to be performed.
+                    enum:
+                      - add
+                      - remove
+                      - replace
+                      - move
+                      - copy
+                      - test
+                  path:
+                    type: string
+                    description: A JSON-Pointer.
+                  value:
+                    type: object
+                    description: The value to be used within the operations.
+                  from:
+                    type: string
+                    description: A string containing a JSON Pointer value.
+            examples:
+              patch_request_example1:
+                value:
+                  - op: replace
+                    path: first_name
+                    value: Jenny
+                  - op: replace
+                    path: last_name
+                    value: Wolter
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: 'Definition of a Person object, that is returned by the Person API.'
+                allOf:
+                  - title: Base definition of a Person.
+                    type: object
+                    required:
+                      - first_name
+                      - last_name
+                      - date_of_birth
+                      - gender
+                    properties:
+                      id:
+                        type: string
+                        description: The person's ID.
+                      first_name:
+                        type: string
+                        description: The person's first name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      last_name:
+                        type: string
+                        description: The person's last name.
+                        pattern: '^[0-9a-zA-Z]{1,100}$'
+                      date_of_birth:
+                        description: Person's data of birth.
+                        type: string
+                        format: date
+                      gender:
+                        type: string
+                        description: |
+                          Gender of a person. * `U`: undefined or unknown * `M`: male * `F`: female * `D`: divers
+                        enum:
+                          - U
+                          - M
+                          - F
+                          - D
+                        default: U
+                        x-enum-varnames:
+                          - UNDEFINED
+                          - MALE
+                          - FEMALE
+                          - DIVERS
+                      deceased:
+                        description: 'Flag, if person is deceased.'
+                        type: boolean
+                        default: 'false'
+                      comment:
+                        type: string
+                        description: A comment.
+                        maxLength: 1000
+                      location:
+                        title: GeoLocation
+                        description: Geographical coordinates.
+                        type: object
+                        required:
+                          - latitude
+                          - longitude
+                        properties:
+                          latitude:
+                            type: number
+                            minimum: -90
+                            maximum: 90
+                          longitude:
+                            type: number
+                            minimum: -180
+                            maximum: 180
+                  - type: object
+                    required:
+                      - id
+                      - firstName
+                      - lastName
+                      - dateOfBirth
+                      - age
+                      - gender
+                      - deceased
+                      - creationDateTime
+                      - comment
+                    properties:
+                      age:
+                        description: Age in years which must be equal to or greater than zero.
+                        type: integer
+                        minimum: 0
+                      creation_date_time:
+                        description: 'Timestamp, when the entry was added.'
+                        type: string
+                        format: date-time
+              examples:
+                update_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jenny
+                    last_name: Wolter
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The updated person extended by some calculated values.
+        '404':
+          description: person with given id not found
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error
+    delete:
+      operationId: deleteById
+      summary: Delete a single person based on the ID supplied.
+      tags:
+        - Person
+      responses:
+        '204':
+          description: Person was deleted.
+        '404':
+          description: Person with given id not found.
+        '500':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the problem type.  When dereferenced,
+                      it SHOULD provide human-readable documentation for the problem type
+                      (e.g., using HTML).
+                    default: 'about:blank'
+                    example: 'https://zalando.github.io/problem/constraint-violation'
+                  title:
+                    type: string
+                    description: |
+                      A short, summary of the problem type. Written in english and readable
+                      for engineers (usually not suited for non technical stakeholders and
+                      not localized); example: Service Unavailable
+                  status:
+                    type: integer
+                    format: int32
+                    description: |
+                      The HTTP status code generated by the origin server for this occurrence
+                      of the problem.
+                    minimum: 100
+                    maximum: 600
+                    exclusiveMaximum: true
+                    example: 503
+                  detail:
+                    type: string
+                    description: |
+                      A human readable explanation specific to this occurrence of the
+                      problem.
+                    example: Connection to database timed out
+                  instance:
+                    type: string
+                    format: uri
+                    description: |
+                      An absolute URI that identifies the specific occurrence of the problem.
+                      It may or may not yield further information if dereferenced.
+          description: unexpected error

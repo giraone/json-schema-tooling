@@ -14,13 +14,13 @@
       "javaName": "firstName",
       "type": "string",
       "description": "The person's first name.",
-      "pattern": "^([0-9a-zA-Z]{1,100})$"
+      "pattern": "^[0-9a-zA-Z]{1,100}$"
     },
     "last_name": {
       "javaName": "lastName",
       "type": "string",
       "description": "The person's last name.",
-      "pattern": "^([0-9a-zA-Z]{1,100})$"
+      "pattern": "^[0-9a-zA-Z]{1,100}$"
     },
     "date_of_birth": {
       "javaName": "dateOfBirth",
@@ -30,11 +30,7 @@
       "customDateTimePattern" : "yyyy-MM-dd"
     },
     "gender": {
-      "description": "The person's gender.",
-      "type": "string",
-      "enum": ["U", "M", "F", "D"],
-      "javaEnums" : ["unknown", "male", "female", "divers"],
-      "default": "U"
+      "$ref": "types/gender-enum.json"
     },
     "deceased": {
       "description": "Flag, if person is deceased.",

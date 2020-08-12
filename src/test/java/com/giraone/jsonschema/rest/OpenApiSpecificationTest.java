@@ -8,6 +8,7 @@ import de.codecentric.hikaku.endpoints.Endpoint;
 import de.codecentric.hikaku.reporters.CommandLineReporter;
 import de.codecentric.hikaku.reporters.Reporter;
 import kotlin.jvm.functions.Function1;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +27,7 @@ public class OpenApiSpecificationTest {
     @Autowired
     private ApplicationContext springContext;
 
+    @Disabled
     @Test
     public void specification_matches_implementation() {
 

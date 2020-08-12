@@ -9,6 +9,7 @@ required:
 properties:
   id:
     type: string
+    format: uuid
     description: The person's ID.
   first_name:
     type: string
@@ -21,16 +22,9 @@ properties:
   date_of_birth:
     description: Person's data of birth.
     type: string
-    format: date
+    format: date-time
   gender:
-    description: The person's gender.
-    type: string
-    enum:
-      - U
-      - M
-      - F
-      - D
-    default: U
+    $ref: 'types/gender-enum.yaml'
   deceased:
     description: Flag, if person is deceased.
     type: boolean

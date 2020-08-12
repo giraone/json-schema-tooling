@@ -1,0 +1,7 @@
+{
+  "type": "array",
+  "description": "A JSONPatch array as defined by RFC 6902.",
+  "items": {
+    "$ref": "patch-entry.json"
+  }
+}

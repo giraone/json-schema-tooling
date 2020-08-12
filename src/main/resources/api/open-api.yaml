@@ -1,5 +1,5 @@
 ---
-openapi: 3.0.2
+openapi: 3.0.3
 info:
   title: Person API
   version: 1.0.0
@@ -21,7 +21,9 @@ paths:
   '/api/v1/persons':
     get:
       operationId: getAll
-      description: Return all persons.
+      summary: Return all persons of the repository.
+      tags:
+        - Person
       parameters:
         - name: limit
           description: Optional limit for the number of returned persons.
@@ -56,16 +58,18 @@ paths:
                       age: 44
                       deceased: false
           description: A list of persons.
-        default:
+        '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
 
     post:
       operationId: insertNew
-      description: Insert a new person to the repository. If no id is given it will be generated.
+      summary: Insert a new person to the repository. If no id is given it will be generated.
+      tags:
+        - Person
       requestBody:
         description: Insert a new person to the repository.
         content:
@@ -97,11 +101,11 @@ paths:
                     age: 44
                     deceased: false
           description: The added person extended by some calculated values.
-        default:
+        '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
 
   '/api/v1/persons/{id}':
@@ -110,11 +114,14 @@ paths:
         description: The UUID of the person to fetch.
         schema:
           type: string
+          format: uuid
         in: path
         required: true
     get:
       operationId: getOneById
-      description: Returns a person based on a given ID.
+      summary: Returns a person from the repository based on a given ID.
+      tags:
+        - Person
       responses:
         '200':
           content:
@@ -132,18 +139,22 @@ paths:
                     age: 44
                     deceased: false
           description: a person, if one was found for the given id.
-        default:
+        '404':
+          description: person with given id not found
+        '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
 
     put:
       operationId: updateExisting
-      description: Update an existing person in the repository.
+      summary: Update an existing person in the repository by fully overwriting the data.
+      tags:
+        - Person
       requestBody:
-        description: Update an existing person in the repository.
+        description: The person data used for the update.
         content:
           application/json:
             schema:
@@ -163,7 +174,7 @@ paths:
               schema:
                 $ref: 'schemas-yaml/person-full.yaml'
               examples:
-                insert_response_example1:
+                update_response_example1:
                   value:
                     id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
                     first_name: Jill
@@ -173,35 +184,75 @@ paths:
                     age: 44
                     deceased: false
           description: The updated person extended by some calculated values.
-        default:
+        '404':
+          description: person with given id not found
+        '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'schemas-yaml/problem.yaml'
+          description: unexpected error
+
+    patch:
+      operationId: updateSelective
+      summary: Update an existing person in the repository using selective patch operations.
+      tags:
+        - Person
+      requestBody:
+        description: Update an existing person in the repository.
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "schemas-yaml/patch-request.yaml"
+            examples:
+              patch_request_example1:
+                value:
+                  - op: replace
+                    path: first_name
+                    value: Jenny
+                  - op: replace
+                    path: last_name
+                    value: Wolter
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas-yaml/person-full.yaml'
+              examples:
+                update_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jenny
+                    last_name: Wolter
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The updated person extended by some calculated values.
+        '404':
+          description: person with given id not found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
 
     delete:
       operationId: deleteById
-      description: Delete a single person based on the ID supplied.
+      summary: Delete a single person based on the ID supplied.
+      tags:
+        - Person
       responses:
         '204':
           description: Person was deleted.
-        default:
+        '404':
+          description: Person with given id not found.
+        '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
-
-components:
-  schemas:
-    Error:
-      required:
-        - code
-        - message
-      properties:
-        code:
-          format: int32
-          type: integer
-        message:
-          type: string
