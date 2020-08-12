@@ -23,6 +23,7 @@ properties:
     description: Person's data of birth.
     type: string
     format: date-time
+    customDateTimePattern: yyyy-MM-dd
   gender:
     $ref: 'types/gender-enum.yaml'
   deceased:

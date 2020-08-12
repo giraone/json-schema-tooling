@@ -61,7 +61,7 @@ public class PersonBase {
      * (Required)
      * 
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")
     @JsonProperty("date_of_birth")
     @JsonPropertyDescription("Person's data of birth.")
     private Date dateOfBirth;
