@@ -10,34 +10,20 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.YEARS;
 
 @RestController
-@RequestMapping("/api/v1/persons")
+@RequestMapping("/api/v1")
 public class PersonResource {
 
     private final Logger log = LoggerFactory.getLogger(PersonResource.class);
@@ -51,7 +37,7 @@ public class PersonResource {
      * @param person The person to add
      * @return The added person extended by some calculated values.
      */
-    @PostMapping()
+    @PostMapping("/persons")
     public ResponseEntity<PersonFull> insertNew(@Valid @RequestBody PersonBase person) {
 
         log.debug("POST {}", person);
@@ -78,7 +64,7 @@ public class PersonResource {
         return ResponseEntity.created(location).body(newPerson);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/persons/{id}")
     public ResponseEntity<PersonFull> updateExisting(@PathVariable UUID id, @Valid @RequestBody PersonBase person) {
 
         log.debug("PUT id={}, person={}", id, person);
@@ -99,7 +85,7 @@ public class PersonResource {
         return ResponseEntity.ok(existingPerson);
     }
 
-    @PatchMapping(path = "/{id}", consumes = "application/json-patch+json")
+    @PatchMapping(path = "/persons/{id}", consumes = "application/json-patch+json")
     public ResponseEntity<PersonFull> updateSelective(@PathVariable UUID id, @Valid @RequestBody JsonPatch patch) {
 
         log.debug("PATCH id={}, patch={}", id, patch);
@@ -125,8 +111,8 @@ public class PersonResource {
      * @param limit Optional limit for the number of returned persons.
      * @return A list of persons.
      */
-    @GetMapping()
-    public ResponseEntity<Collection<PersonFull>> getAll(@RequestParam Integer limit) {
+    @GetMapping("/persons")
+    public ResponseEntity<Collection<PersonFull>> getAll(@RequestParam(required = false) Integer limit) {
 
         log.debug("GET");
         Collection<PersonFull> persons = repository.values();
@@ -141,7 +127,7 @@ public class PersonResource {
      * @param id The UUID of the person to fetch.
      * @return a person, if one was found for the given id.
      */
-    @GetMapping("/{id}")
+    @GetMapping("/persons/{id}")
     public ResponseEntity<PersonFull> getOneById(@PathVariable UUID id) {
 
         log.debug("GET {}", id);
@@ -156,9 +142,9 @@ public class PersonResource {
     /**
      * Delete a single person based on the ID supplied.
      * @param id The UUID of the person to delete.
-     * @return
+     * @return Void
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/persons/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
 
         log.debug("GET {}", id);
