@@ -1,0 +1,207 @@
+---
+openapi: 3.0.2
+info:
+  title: Person API
+  version: 1.0.0
+  description: Simple Person API.
+  termsOfService: http://giraone.com/terms/
+  contact:
+    name: GiraOne
+    url: http://giraone.com
+    email: info@giraone.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Person
+    description: 'All endpoints related to Person object.'
+paths:
+  '/api/v1/persons':
+    get:
+      operationId: getAll
+      description: Return all persons.
+      parameters:
+        - name: limit
+          description: Optional limit for the number of returned persons.
+          schema:
+            format: int32
+            type: integer
+          in: query
+          required: false
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: 'schemas-yaml/person-full.yaml'
+              examples:
+                list_example1:
+                  value:
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ece
+                      first_name: John
+                      last_name: Doe
+                      date_of_birth: '1977-12-31T00:00:00.000Z'
+                      gender: M
+                      age: 44
+                      deceased: false
+                    - id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                      first_name: Jane
+                      last_name: Watson
+                      date_of_birth: '1976-01-01T00:00:00.000Z'
+                      gender: F
+                      age: 44
+                      deceased: false
+          description: A list of persons.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+
+    post:
+      operationId: insertNew
+      description: Insert a new person to the repository. If no id is given it will be generated.
+      requestBody:
+        description: Insert a new person to the repository.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas-yaml/person-base.yaml'
+            examples:
+              insert_request_example1:
+                value:
+                  first_name: Jane
+                  last_name: Watson
+                  date_of_birth: '1976-01-01T00:00:00.000Z'
+                  gender: F
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas-yaml/person-full.yaml'
+              examples:
+                insert_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The added person extended by some calculated values.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+
+  '/api/v1/persons/{id}':
+    parameters:
+      - name: id
+        description: The UUID of the person to fetch.
+        schema:
+          type: string
+        in: path
+        required: true
+    get:
+      operationId: getOneById
+      description: Returns a person based on a given ID.
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas-yaml/person-full.yaml'
+              examples:
+                example_1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jane
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: a person, if one was found for the given id.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+
+    put:
+      operationId: updateExisting
+      description: Update an existing person in the repository.
+      requestBody:
+        description: Update an existing person in the repository.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas-yaml/person-base.yaml'
+            examples:
+              update_request_example1:
+                value:
+                  first_name: Jill
+                  last_name: Watson
+                  date_of_birth: '1976-01-01T00:00:00.000Z'
+                  gender: F
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas-yaml/person-full.yaml'
+              examples:
+                insert_response_example1:
+                  value:
+                    id: b6f4078e-a5f0-43d0-a022-0fd4f3207ecf
+                    first_name: Jill
+                    last_name: Watson
+                    date_of_birth: '1976-01-01T00:00:00.000Z'
+                    gender: F
+                    age: 44
+                    deceased: false
+          description: The updated person extended by some calculated values.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+
+    delete:
+      operationId: deleteById
+      description: Delete a single person based on the ID supplied.
+      responses:
+        '204':
+          description: Person was deleted.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: unexpected error
+
+components:
+  schemas:
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string

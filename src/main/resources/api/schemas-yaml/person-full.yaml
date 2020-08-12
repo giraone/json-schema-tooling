@@ -1,0 +1,24 @@
+---
+title: Definition of a Person object, that is returned by the Person API.
+allOf:
+  - $ref: 'person-base.yaml'
+  - type: object
+    required:
+      - id
+      - firstName
+      - lastName
+      - dateOfBirth
+      - age
+      - gender
+      - deceased
+      - creationDateTime
+      - comment
+    properties:
+      age:
+        description: Age in years which must be equal to or greater than zero.
+        type: integer
+        minimum: 0
+      creation_date_time:
+        description: Timestamp, when the entry was added.
+        type: string
+        format: date-time

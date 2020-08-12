@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.2",
+  "openapi": "3.0.3",
   "info": {
     "title": "Person API",
     "version": "1.0.0",
@@ -48,7 +48,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "../schemas/person-full.json"
+                    "$ref": "schemas-json/person-full.json"
                   }
                 },
                 "examples": {
@@ -99,7 +99,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "../schemas/person-base.json"
+                "$ref": "schemas-json/person-base.json"
               },
               "examples": {
                 "insert_request_example1": {
@@ -120,7 +120,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "../schemas/person-full.json"
+                  "$ref": "schemas-json/person-full.json"
                 },
                 "examples": {
                   "insert_response_example1": {
@@ -178,7 +178,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "../schema/person-full.json"
+                  "$ref": "schemas-json/person-full.json"
                 },
                 "examples": {
                   "example_1": {
@@ -258,169 +258,6 @@
   },
   "components": {
     "schemas": {
-      "PersonBase": {
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "gender"
-        ],
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "description": "The person's ID.",
-            "type": "string"
-          },
-          "first_name": {
-            "description": "The person's first name.",
-            "pattern": "^([0-9a-zA-Z]{1,100})$",
-            "type": "string",
-            "javaName": "firstName"
-          },
-          "last_name": {
-            "description": "The person's last name.",
-            "pattern": "^([0-9a-zA-Z]{1,100})$",
-            "type": "string",
-            "javaName": "lastName"
-          },
-          "date_of_birth": {
-            "format": "date-time",
-            "description": "Person's data of birth.",
-            "type": "string",
-            "javaName": "dateOfBirth",
-            "customDateTimePattern": "yyyy-MM-dd"
-          },
-          "gender": {
-            "description": "The person's gender.",
-            "default": "U",
-            "enum": [
-              "U",
-              "M",
-              "F",
-              "D"
-            ],
-            "type": "string",
-            "javaEnumNames": [
-              "unknown",
-              "male",
-              "female",
-              "divers"
-            ]
-          },
-          "deceased": {
-            "description": "Flag, if person is deceased.",
-            "default": "false",
-            "type": "boolean"
-          },
-          "comment": {
-            "description": "A comment.",
-            "maxLength": 1000,
-            "type": "string"
-          },
-          "location": {
-            "$ref": "../schemas/geo-location.json"
-          }
-        }
-      },
-      "PersonFull": {
-        "required": [
-          "id",
-          "firstName",
-          "lastName",
-          "dateOfBirth",
-          "age",
-          "gender",
-          "deceased",
-          "creationDateTime",
-          "comment"
-        ],
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "description": "The person's ID.",
-            "type": "string"
-          },
-          "first_name": {
-            "description": "The person's first name.",
-            "pattern": "^([0-9a-zA-Z]{1,100})$",
-            "type": "string",
-            "javaName": "firstName"
-          },
-          "last_name": {
-            "description": "The person's last name.",
-            "pattern": "^([0-9a-zA-Z]{1,100})$",
-            "type": "string",
-            "javaName": "lastName"
-          },
-          "date_of_birth": {
-            "format": "date-time",
-            "description": "Person's data of birth.",
-            "type": "string",
-            "javaName": "dateOfBirth",
-            "customDateTimePattern": "yyyy-MM-dd"
-          },
-          "gender": {
-            "description": "The person's gender.",
-            "default": "U",
-            "enum": [
-              "U",
-              "M",
-              "F",
-              "D"
-            ],
-            "type": "string",
-            "javaEnumNames": [
-              "unknown",
-              "male",
-              "female",
-              "divers"
-            ]
-          },
-          "deceased": {
-            "description": "Flag, if person is deceased.",
-            "default": "false",
-            "type": "boolean"
-          },
-          "comment": {
-            "description": "A comment.",
-            "maxLength": 1000,
-            "type": "string"
-          },
-          "location": {
-            "$ref": "../schemas/geo-location.json"
-          },
-          "age": {
-            "description": "Age in years which must be equal to or greater than zero.",
-            "minimum": 0,
-            "type": "integer",
-            "javaType": "long"
-          },
-          "creation_date_time": {
-            "format": "date-time",
-            "description": "Timestamp, when the entry was added.",
-            "type": "string",
-            "javaName": "creationDateTime"
-          }
-        }
-      },
-      "GeoLocation": {
-        "required": [
-          "latitude",
-          "longitude"
-        ],
-        "properties": {
-          "latitude": {
-            "maximum": 90,
-            "minimum": -90,
-            "type": "number"
-          },
-          "longitude": {
-            "maximum": 180,
-            "minimum": -180,
-            "type": "number"
-          }
-        }
-      },
       "Error": {
         "required": [
           "code",
