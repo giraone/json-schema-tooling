@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.giraone.jsonschema.JsonschemaApplication;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +19,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class PersonResourceIT {
 
-    private static final String BASE_URL = "/api/v1/persons";
+    private static final String BASE_URL_FORMAT = "/api/v%d/persons";
 
     @Autowired
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -47,9 +47,9 @@ class PersonResourceIT {
     @Autowired
     private MockMvc mockMvc;
 
-    @Test
+    @ForAllVersions
     @Order(1)
-    public void insertNew() throws Exception {
+    public void insertNew(int apiVersion) throws Exception {
 
         Map<String, Object> payload = Map.of(
             "first_name", "John",
@@ -58,7 +58,7 @@ class PersonResourceIT {
             "gender", "M"
         );
 
-        String response = mockMvc.perform(post(BASE_URL)
+        String response = mockMvc.perform(post(buildUrl(apiVersion))
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(payload)))
             //.andDo(print())
@@ -80,11 +80,11 @@ class PersonResourceIT {
         assertThat(id1).isNotNull();
     }
 
-    @Test
+    @ForAllVersions
     @Order(2)
-    public void getOneById() throws Exception {
+    public void getOneById(int apiVersion) throws Exception {
 
-        mockMvc.perform(get(BASE_URL + "/" + id1.toString()))
+        mockMvc.perform(get(buildUrl(apiVersion) + "/" + id1.toString()))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -98,11 +98,11 @@ class PersonResourceIT {
         ;
     }
 
-    @Test
+    @ForAllVersions
     @Order(3)
-    public void getAll() throws Exception {
+    public void getAll(int apiVersion) throws Exception {
 
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(buildUrl(apiVersion)))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.[0].id").value(id1.toString()))
@@ -115,15 +115,15 @@ class PersonResourceIT {
         ;
     }
 
-    @Test
+    @ForAllVersions
     @Order(4)
-    public void updateExisting() throws Exception {
+    public void updateExisting(int apiVersion) throws Exception {
 
         Map<String, Object> payload = new HashMap<>(currentData1);
         payload.put("first_name", "Jane");
         payload.put("gender", "M");
 
-        String response = mockMvc.perform(put(BASE_URL + "/" + id1.toString())
+        String response = mockMvc.perform(put(buildUrl(apiVersion) + "/" + id1.toString())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(payload)))
             .andDo(print())
@@ -141,16 +141,16 @@ class PersonResourceIT {
         currentData1 = objectMapper.readValue(response, typeRefMap);
     }
 
-    @Test
+    @ForAllVersions
     @Order(5)
-    public void updateSelective() throws Exception {
+    public void updateSelective(int apiVersion) throws Exception {
 
         Map<String, Object> op1 = Map.of("op", "replace", "path", "/date_of_birth", "value", "1972-11-30");
         Map<String, Object> op2 = Map.of("op", "add", "path", "/location", "value",
             Map.of("latitude", 10.0, "longitude", 11.1));
         List<Map<String, Object>> ops = List.of(op1, op2);
 
-        String response = mockMvc.perform(patch(BASE_URL + "/" + id1.toString())
+        String response = mockMvc.perform(patch(buildUrl(apiVersion) + "/" + id1.toString())
             .contentType("application/json-patch+json")
             .content(objectMapper.writeValueAsString(ops)))
             .andDo(print())
@@ -170,14 +170,20 @@ class PersonResourceIT {
         currentData1 = objectMapper.readValue(response, typeRefMap);
     }
 
-    @Test
+    @ForAllVersions
     @Order(6)
-    public void deleteById() throws Exception {
+    public void deleteById(int apiVersion) throws Exception {
 
-        mockMvc.perform(delete(BASE_URL + "/" + id1.toString()))
+        mockMvc.perform(delete(buildUrl(apiVersion) + "/" + id1.toString()))
             .andDo(print())
             .andExpect(status().isNoContent());
         currentData1 = null;
     }
 
+    //-------------------------------------------------------------------------------
+
+    private String buildUrl(int apiVersion) {
+
+        return String.format(BASE_URL_FORMAT, apiVersion);
+    }
 }
