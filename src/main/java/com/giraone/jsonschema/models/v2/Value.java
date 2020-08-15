@@ -1,5 +1,5 @@
 
-package com.giraone.jsonschema.models;
+package com.giraone.jsonschema.models.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

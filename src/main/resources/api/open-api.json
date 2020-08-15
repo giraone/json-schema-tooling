@@ -27,7 +27,7 @@
     }
   ],
   "paths": {
-    "/api/v1/persons": {
+    "/api/v2/persons": {
       "get": {
         "operationId": "getAll",
         "summary": "Return all persons of the repository.",
@@ -160,7 +160,7 @@
         }
       }
     },
-    "/api/v1/persons/{id}": {
+    "/api/v2/persons/{id}": {
       "parameters": [
         {
           "name": "id",

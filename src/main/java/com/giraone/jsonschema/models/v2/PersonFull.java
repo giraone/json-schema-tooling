@@ -1,5 +1,5 @@
 
-package com.giraone.jsonschema.models;
+package com.giraone.jsonschema.models.v2;
 
 import java.util.Date;
 import java.util.UUID;

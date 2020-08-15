@@ -10,7 +10,7 @@
   </parent>
   <groupId>com.giraone</groupId>
   <artifactId>jsonschema</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <name>jsonschema</name>
   <description>JSON Schema Test</description>
 
@@ -131,9 +131,9 @@
         <artifactId>jsonschema2pojo-maven-plugin</artifactId>
         <version>1.0.2</version>
         <configuration>
-          <sourceDirectory>${basedir}/src/main/resources/api/schemas-yaml</sourceDirectory>
-          <sourceType>yamlschema</sourceType>
-          <targetPackage>com.giraone.jsonschema.models</targetPackage>
+          <sourceDirectory>${basedir}/src/main/resources/api/schemas-json</sourceDirectory>
+          <sourceType>jsonschema</sourceType>
+          <targetPackage>com.giraone.jsonschema.models.v2</targetPackage>
           <outputDirectory>src/main/java</outputDirectory>
 
           <includeAdditionalProperties>false</includeAdditionalProperties>
@@ -157,7 +157,10 @@
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>5.0.0-beta</version>
         <executions>
+
+          <!-- This is V1 - everything is generated with openapitools -->
           <execution>
+            <id>generate-v1</id>
             <goals>
               <goal>generate</goal>
             </goals>
@@ -166,8 +169,58 @@
               <output>.</output>
 
               <generatorName>spring</generatorName>
-              <apiPackage>com.giraone.jsonschema.api</apiPackage>
-              <modelPackage>com.giraone.jsonschema.models</modelPackage>
+              <apiPackage>com.giraone.jsonschema.api.v1</apiPackage>
+              <modelPackage>com.giraone.jsonschema.models.v1</modelPackage>
+
+              <serverVariableOverrides></serverVariableOverrides>
+              <generateModels>true</generateModels>
+              <generateApis>true</generateApis>
+              <!-- @ApiOperation, ... -->
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <!-- @ApiModel, @ApiModelProperty, ... -->
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <!-- No tests -->
+              <generateModelTests>false</generateModelTests>
+              <generateApiTests>false</generateApiTests>
+              <!-- Will generate SpringBootApplication and Helper classes. -->
+              <generateSupportingFiles>false</generateSupportingFiles>
+
+              <strictSpec>false</strictSpec>
+              <skipValidateSpec>false</skipValidateSpec>
+
+              <typeMappings>
+                <typeMapping>OffsetDateTime=LocalDateTime</typeMapping>
+              </typeMappings>
+              <importMappings>
+                <importMapping>java.time.OffsetDateTime=java.time.LocalDateTime</importMapping>
+              </importMappings>
+
+              <configOptions>
+                <sourceFolder>src/main/java</sourceFolder>
+                <java8>false</java8>
+                <dateLibrary>java8</dateLibrary>
+                <!-- Use tags for class naming of the API -->
+                <useTags>true</useTags>
+                <!-- Generate no SpringBootController when using "spring" generator -->
+                <interfaceOnly>true</interfaceOnly>
+              </configOptions>
+
+            </configuration>
+          </execution>
+
+          <!-- This is V2 - API interface is generated with openapitools, models with jsonschema2pojo -->
+          <execution>
+            <id>generate-v2</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/api/open-api.yaml</inputSpec>
+              <output>.</output>
+
+              <generatorName>spring</generatorName>
+              <apiPackage>com.giraone.jsonschema.api.v2</apiPackage>
+              <modelPackage>com.giraone.jsonschema.models.v2</modelPackage>
 
               <generateModels>false</generateModels>
               <generateApis>true</generateApis>
@@ -188,6 +241,8 @@
                 <sourceFolder>src/main/java</sourceFolder>
                 <java8>false</java8>
                 <dateLibrary>java8</dateLibrary>
+                <!-- Use tags for class naming of the API -->
+                <useTags>true</useTags>
                 <!-- Generate no SpringBootController when using "spring" generator -->
                 <interfaceOnly>true</interfaceOnly>
               </configOptions>

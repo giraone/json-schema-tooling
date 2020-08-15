@@ -3,13 +3,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-package com.giraone.jsonschema.api;
+package com.giraone.jsonschema.api.v2;
 
 import java.util.List;
-import com.giraone.jsonschema.models.PatchEntry;
-import com.giraone.jsonschema.models.PersonBase;
-import com.giraone.jsonschema.models.PersonFull;
-import com.giraone.jsonschema.models.Problem;
+import com.giraone.jsonschema.models.v2.PatchEntry;
+import com.giraone.jsonschema.models.v2.PersonBase;
+import com.giraone.jsonschema.models.v2.PersonFull;
+import com.giraone.jsonschema.models.v2.Problem;
 import java.util.UUID;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -28,13 +28,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2020-08-13T00:30:52.607416400+02:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2020-08-15T10:15:19.671680600+02:00[Europe/Berlin]")
 @Validated
-@Api(value = "api", description = "the api API")
-public interface ApiApi {
+@Api(value = "Person", description = "the Person API")
+public interface PersonApi {
 
     /**
-     * DELETE /api/v1/persons/{id} : Delete a single person based on the ID supplied.
+     * DELETE /persons/{id} : Delete a single person based on the ID supplied.
      *
      * @param id The UUID of the person to fetch. (required)
      * @return Person was deleted. (status code 204)
@@ -46,14 +46,14 @@ public interface ApiApi {
         @ApiResponse(code = 204, message = "Person was deleted."),
         @ApiResponse(code = 404, message = "Person with given id not found."),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons/{id}",
+    @RequestMapping(value = "/persons/{id}",
         produces = { "application/json" }, 
         method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteById(@ApiParam(value = "The UUID of the person to fetch.",required=true) @PathVariable("id") UUID id);
 
 
     /**
-     * GET /api/v1/persons : Return all persons of the repository.
+     * GET /persons : Return all persons of the repository.
      *
      * @param limit Optional limit for the number of returned persons. (optional)
      * @return A list of persons. (status code 200)
@@ -63,14 +63,14 @@ public interface ApiApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "A list of persons.", response = PersonFull.class, responseContainer = "List"),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons",
+    @RequestMapping(value = "/persons",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
     ResponseEntity<List<PersonFull>> getAll(@ApiParam(value = "Optional limit for the number of returned persons.") @Valid @RequestParam(value = "limit", required = false) Integer limit);
 
 
     /**
-     * GET /api/v1/persons/{id} : Returns a person from the repository based on a given ID.
+     * GET /persons/{id} : Returns a person from the repository based on a given ID.
      *
      * @param id The UUID of the person to fetch. (required)
      * @return a person, if one was found for the given id. (status code 200)
@@ -82,14 +82,14 @@ public interface ApiApi {
         @ApiResponse(code = 200, message = "a person, if one was found for the given id.", response = PersonFull.class),
         @ApiResponse(code = 404, message = "person with given id not found"),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons/{id}",
+    @RequestMapping(value = "/persons/{id}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
     ResponseEntity<PersonFull> getOneById(@ApiParam(value = "The UUID of the person to fetch.",required=true) @PathVariable("id") UUID id);
 
 
     /**
-     * POST /api/v1/persons : Insert a new person to the repository. If no id is given it will be generated.
+     * POST /persons : Insert a new person to the repository. If no id is given it will be generated.
      *
      * @param personBase Insert a new person to the repository. (required)
      * @return The added person extended by some calculated values. (status code 200)
@@ -99,7 +99,7 @@ public interface ApiApi {
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "The added person extended by some calculated values.", response = PersonFull.class),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons",
+    @RequestMapping(value = "/persons",
         produces = { "application/json" }, 
         consumes = { "application/json" },
         method = RequestMethod.POST)
@@ -107,7 +107,7 @@ public interface ApiApi {
 
 
     /**
-     * PUT /api/v1/persons/{id} : Update an existing person in the repository by fully overwriting the data.
+     * PUT /persons/{id} : Update an existing person in the repository by fully overwriting the data.
      *
      * @param id The UUID of the person to fetch. (required)
      * @param personBase The person data used for the update. (required)
@@ -120,7 +120,7 @@ public interface ApiApi {
         @ApiResponse(code = 200, message = "The updated person extended by some calculated values.", response = PersonFull.class),
         @ApiResponse(code = 404, message = "person with given id not found"),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons/{id}",
+    @RequestMapping(value = "/persons/{id}",
         produces = { "application/json" }, 
         consumes = { "application/json" },
         method = RequestMethod.PUT)
@@ -128,7 +128,7 @@ public interface ApiApi {
 
 
     /**
-     * PATCH /api/v1/persons/{id} : Update an existing person in the repository using selective patch operations.
+     * PATCH /persons/{id} : Update an existing person in the repository using selective patch operations.
      *
      * @param id The UUID of the person to fetch. (required)
      * @param patchEntry Update an existing person in the repository. (required)
@@ -141,7 +141,7 @@ public interface ApiApi {
         @ApiResponse(code = 200, message = "The updated person extended by some calculated values.", response = PersonFull.class),
         @ApiResponse(code = 404, message = "person with given id not found"),
         @ApiResponse(code = 500, message = "unexpected error", response = Problem.class) })
-    @RequestMapping(value = "/api/v1/persons/{id}",
+    @RequestMapping(value = "/persons/{id}",
         produces = { "application/json" }, 
         consumes = { "application/json-patch+json" },
         method = RequestMethod.PATCH)

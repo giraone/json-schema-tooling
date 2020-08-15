@@ -1,5 +1,5 @@
 
-package com.giraone.jsonschema.models;
+package com.giraone.jsonschema.models.v2;
 
 import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -59,9 +59,10 @@ public class Problem {
      * An absolute URI that identifies the specific occurrence of the problem.
      * It may or may not yield further information if dereferenced.
      * 
+     * 
      */
     @JsonProperty("instance")
-    @JsonPropertyDescription("An absolute URI that identifies the specific occurrence of the problem.\nIt may or may not yield further information if dereferenced.")
+    @JsonPropertyDescription("An absolute URI that identifies the specific occurrence of the problem.\nIt may or may not yield further information if dereferenced.\n")
     private URI instance;
 
     /**
@@ -180,6 +181,7 @@ public class Problem {
      * An absolute URI that identifies the specific occurrence of the problem.
      * It may or may not yield further information if dereferenced.
      * 
+     * 
      */
     @JsonProperty("instance")
     public URI getInstance() {
@@ -189,6 +191,7 @@ public class Problem {
     /**
      * An absolute URI that identifies the specific occurrence of the problem.
      * It may or may not yield further information if dereferenced.
+     * 
      * 
      */
     @JsonProperty("instance")

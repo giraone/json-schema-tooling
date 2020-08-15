@@ -13,12 +13,12 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8080/api/v1
 tags:
   - name: Person
     description: 'All endpoints related to Person object.'
 paths:
-  '/api/v1/persons':
+  '/persons':
     get:
       operationId: getAll
       summary: Return all persons of the repository.
@@ -108,7 +108,7 @@ paths:
                 $ref: 'schemas-yaml/problem.yaml'
           description: unexpected error
 
-  '/api/v1/persons/{id}':
+  '/persons/{id}':
     parameters:
       - name: id
         description: The UUID of the person to fetch.

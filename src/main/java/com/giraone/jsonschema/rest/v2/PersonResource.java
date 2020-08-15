@@ -1,20 +1,29 @@
-package com.giraone.jsonschema.rest;
+package com.giraone.jsonschema.rest.v2;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.giraone.jsonschema.api.ApiApi;
-import com.giraone.jsonschema.models.PatchEntry;
-import com.giraone.jsonschema.models.PersonBase;
-import com.giraone.jsonschema.models.PersonFull;
-import com.giraone.jsonschema.models.Problem;
+import com.giraone.jsonschema.api.v2.PersonApi;
+import com.giraone.jsonschema.models.v2.PatchEntry;
+import com.giraone.jsonschema.models.v2.PersonBase;
+import com.giraone.jsonschema.models.v2.PersonFull;
+import com.giraone.jsonschema.models.v2.Problem;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -22,14 +31,19 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.YEARS;
 
-@RestController
-@RequestMapping("/api/v1")
-public class PersonResource implements ApiApi {
+@RestController("PersonResourceV2")
+@RequestMapping("/api/v2")
+public class PersonResource implements PersonApi {
 
     private final Logger log = LoggerFactory.getLogger(PersonResource.class);
 

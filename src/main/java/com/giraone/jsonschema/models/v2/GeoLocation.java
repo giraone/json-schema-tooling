@@ -1,5 +1,5 @@
 
-package com.giraone.jsonschema.models;
+package com.giraone.jsonschema.models.v2;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * GeoLocation
+ * Longitude and Latitude Values
  * <p>
- * Geographical coordinates.
+ * A geographical coordinate.
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
